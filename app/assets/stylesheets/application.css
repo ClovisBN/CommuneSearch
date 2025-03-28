@@ -1,0 +1,12 @@
+.commune-search-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.list-group-item {
+  background-color: #f8f9fa;
+}
+
+.list-group-item:hover {
+  background-color: #e2e6ea;
+}

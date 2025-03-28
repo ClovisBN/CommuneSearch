@@ -1,0 +1,61 @@
+<div class="commune-search-container py-4 px-3">
+  <%= form_with url: root_path, method: :get, local: true, html: { id: "commune-search-form" } do |form| %>
+    <div class="form-group mb-3">
+      <%= label_tag :q, "Rechercher une commune", class: "form-label" %>
+      <%= text_field_tag :q, params[:q], placeholder: "Ex : Paris, Marseille...", class: "form-control", id: "commune-search-input", autocomplete: "off" %>
+      <ul id="commune-suggestions" class="list-group mt-1"></ul>
+    </div>
+
+    <%= submit_tag "Rechercher", class: "btn btn-primary w-100" %>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", initializeCommuneAutocomplete);
+  document.addEventListener("DOMContentLoaded", initializeCommuneAutocomplete);
+
+  function initializeCommuneAutocomplete() {
+    const input = document.getElementById("commune-search-input");
+    const suggestions = document.getElementById("commune-suggestions");
+
+    if (!input) return;
+
+    input.addEventListener("input", async (e) => {
+      const query = e.target.value;
+      if (query.length < 3) {
+        suggestions.innerHTML = "";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/autocomplete?q=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error("Erreur lors de la récupération");
+        const data = await res.json();
+
+        suggestions.innerHTML = "";
+        data.forEach((commune) => {
+          const li = document.createElement("li");
+          li.classList.add("list-group-item", "list-group-item-action");
+          li.textContent = `${commune.nom} (${commune.code})`;
+          li.style.cursor = "pointer";
+          li.onclick = () => {
+            window.location.href = `/communes/${commune.code}`;
+          };
+          suggestions.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Erreur d'autocomplétion :", err);
+      }
+    });
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const query = input.value.trim();
+        if (query !== "") {
+          window.location.href = `/communes/${query}`;
+        }
+      }
+    });
+  }
+</script>

@@ -1,0 +1,11 @@
+<h1><%= @commune["nom"] %></h1>
+
+<ul>
+  <li><strong>Code INSEE :</strong> <%= @commune["code"] %></li>
+  <li><strong>Département :</strong> <%= @commune.dig("departement", "nom") %></li>
+  <li><strong>Région :</strong> <%= @commune.dig("region", "nom") %></li>
+  <li><strong>Population :</strong> <%= @commune["population"] || "N/A" %></li>
+  <li><strong>Superficie :</strong> <%= @commune["surface"] ? "#{@commune["surface"]} m²" : "N/A" %></li>
+</ul>
+
+<%= link_to "Retour", root_path %>
